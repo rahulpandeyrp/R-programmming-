@@ -1,0 +1,271 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+
+
+
+
+
+#Q3 b
+ 
+#qudratic loss batch gradient
+
+```{r pressure2, echo=FALSE}
+#install.packages("matlib")
+quadratic_loss<-function()
+{
+x<-vector()
+
+# squared error cost function
+cost <- function(X, y, theta) {
+  sum( ((X %*% theta) - y)^2 ) / (2*length(y))
+}
+
+# learning rate and iteration limit
+alpha <- 0.01
+num_iters <- 1000
+
+# keep history
+cost_history <- double(num_iters)
+theta_history <- list(num_iters)
+
+# initialize coefficients
+theta <- matrix(c(0,0), nrow=2)
+as.vector(theta)
+
+
+# gradient descent
+for (i in 1:num_iters) {
+ error <- ((x %*% theta) - y)
+  delta <- t(x) %*% error / length(y)
+  theta <- theta - alpha * delta
+  cost_history[i] <- cost(x, y, theta)
+  theta_history[[i]] <- theta
+}
+}
+```
+
+#mean absolute error batch gradient
+
+```{r pressure3, echo=FALSE}
+#install.packages("matlib")
+library(matlib)
+
+batch_gradient_MAE<-function()
+{
+# mean absolute error cost function
+cost <- function(X, y, theta) {
+  sum( abs((X %*% theta) - y) ) / (2*length(y))
+}
+
+# learning rate and iteration limit
+alpha <- 0.01
+num_iters <- 1000
+
+# keep history
+cost_history <- double(num_iters)
+theta_history_mae <- list(num_iters)
+
+# initialize coefficients
+theta <- matrix(c(0,0), nrow=2)
+as.vector(theta)
+
+
+# gradient descent
+for (i in 1:num_iters) {
+ 
+  error <- ifelse((x %*% theta) > y,-1 , 1)
+  
+ 
+  delta <-  t(x)%*% error / length(y)
+  theta <- theta - alpha * delta
+  cost_history[i] <- cost(x, y, theta)
+  theta_history_mae[[i]] <- theta
+}
+}
+```
+
+#huber loss batch gradient
+```{r pressure4, echo=FALSE}
+#install.packages("matlib")
+library(matlib)
+huber_loss_batch_gradient <- function()
+{
+
+# learning rate and iteration limit
+alpha <- 0.01
+num_iters <- 1000
+delta_new <- 8
+
+# keep history
+cost_history <- double(num_iters)
+theta_history_huber <- list(num_iters)
+
+# initialize coefficients
+theta <- matrix(c(0,0), nrow=2)
+as.vector(theta)
+
+
+# gradient descent
+for (i in 1:num_iters) {
+ 
+      error <- ifelse(test = abs(y - x %*% theta) <= delta_new, t(x[,2]) %*% (x %*% theta - y), 
+                    ifelse(x %*% theta >= y, delta_new, -1 * delta_new))
+  
+ 
+  delta <-  t(x)%*% error / length(y)
+  theta <- theta - alpha * delta
+  cost_history[i] <- cost(x, y, theta)
+  theta_history_huber[[i]] <- theta
+}
+}
+```
+
+
+
+#q3 c
+
+#qudratic schotastic gradient
+
+```{r pressure5, echo=FALSE}
+#install.packages("matlib")
+library(matlib)
+quadratic_stichastic<-function()
+{
+# squared error cost function
+cost <- function(X, y, theta) {
+  sum( ((X %*% theta) - y)^2 ) / (2*length(y))
+}
+
+# learning rate and iteration limit
+alpha <- 0.01
+num_iters <- 1000
+
+# keep history
+cost_history <- double(num_iters)
+theta_history <- list(num_iters)
+
+# initialize coefficients
+theta <- matrix(c(0,0), nrow=2)
+as.vector(theta)
+
+
+# gradient descent
+for (i in 1:num_iters) {
+  for(j in 1:length(y))
+  {
+  error <- ((x[j,] %*% theta) - y[j])
+  delta <- (x[j,] %*% error )/ length(y)
+  theta <- theta - alpha * delta
+  cost_history[i] <- cost(x, y, theta)
+  theta_history[[i]] <- theta
+  }
+}
+}
+```
+
+#mean absolute error stochastic gradient
+
+```{r pressure6, echo=FALSE}
+#install.packages("matlib")
+library(matlib)
+MAE_stochastic<-function()
+{
+
+# mean absolute error cost function
+cost <- function(X, y, theta) {
+  sum( abs((X %*% theta) - y) ) / (2*length(y))
+}
+
+# learning rate and iteration limit
+alpha <- 0.01
+num_iters <- 1000
+
+# keep history
+cost_history <- double(num_iters)
+theta_history <- list(num_iters)
+
+# initialize coefficients
+theta <- matrix(c(0,0), nrow=2)
+as.vector(theta)
+
+
+# gradient descent
+for (i in 1:num_iters) {
+  for(j in 1:length(y))
+  {
+  error <- ((x[j,] %*% theta) - y[j])
+  delta <- (x[j,] %*% error )/ length(y)
+  theta <- theta - alpha * delta
+  cost_history[i] <- cost(x, y, theta)
+  theta_history[[i]] <- theta
+  }
+}
+}
+```
+#huber loss stochastic gradient
+
+```{r pressure7, echo=FALSE}
+#install.packages("matlib")
+library(matlib)
+huberloss_stochastic<-function()
+{
+
+# learning rate and iteration limit
+alpha <- 0.01
+num_iters <- 1000
+delta_new <- 8
+
+# keep history
+cost_history <- double(num_iters)
+theta_history_huber <- list(num_iters)
+
+# initialize coefficients
+theta <- matrix(c(0,0), nrow=2)
+as.vector(theta)
+
+
+# gradient descent
+for (i in 1:num_iters) {
+  for (i in 1:num_iters) {
+ 
+      error <- ifelse(test = abs(y - x %*% theta) <= delta_new, t(x[,2]) %*% (x %*% theta - y), 
+                    ifelse(x %*% theta >= y, delta_new, -1 * delta_new))
+  
+ 
+  delta <-  t(x)%*% error / length(y)
+  theta <- theta - alpha * delta
+  #cost_history[i] <- cost(x, y, theta)
+  theta_history_huber[[i]] <- theta
+}
+}
+}
+```
+
+

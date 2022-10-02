@@ -1,0 +1,286 @@
+---
+title: "hw5"
+output: html_document
+---
+
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+install.packages("mlbench")
+library("mlbench")
+library(nycflights13)
+library(dplyr)
+library(fivethirtyeight)
+library(ggplot2)
+library(readxl)
+library(tidyverse)
+
+data(PimaIndiansDiabetes2)
+df <- PimaIndiansDiabetes2
+
+
+df1<-na.omit(df)
+
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+df1<-na.omit(df)
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+fit1 <- lm((pressure) ~ diabetes, data=df1)
+summary(fit1)
+```
+
+
+
+```{r}
+library(tidyverse)
+library(modelr)
+
+df1 %>%
+  add_residuals(fit1, "resid") %>%
+  ggplot(aes(x=diabetes)) +
+  geom_boxplot(aes(y=resid), alpha=0.1) +
+  labs(x="diabetes", y="Residuals") +
+  theme_minimal()
+
+
+df1 %>%
+  add_residuals(fit1, "resid") %>%
+  ggplot(aes(sample=resid)) +
+  geom_qq() +
+  theme_minimal()
+
+```
+
+
+```{r}
+library(tidyverse)
+library(modelr)
+
+df1 %>%
+  add_residuals(fit1, "resid") %>%
+  ggplot(aes(x=pregnant)) +
+  geom_point(aes(y=resid), alpha=0.9) +
+  labs(x="pregnant", y="Residuals") +  
+   theme_minimal()
+
+
+df1 %>%
+  add_residuals(fit1, "resid") %>%
+  ggplot(aes(x=glucose)) +
+  geom_point(aes(y=resid), alpha=0.9) +
+  labs(x="glucose", y="Residuals") +   
+
+  theme_minimal()
+
+
+df1 %>%
+  add_residuals(fit1, "resid") %>%
+  ggplot(aes(x=triceps)) +
+  geom_point(aes(y=resid), alpha=0.9) +
+  labs(x="triceps", y="Residuals") +
+  
+  theme_minimal()
+
+
+
+df1 %>%
+  add_residuals(fit1, "resid") %>%
+  ggplot(aes(x=insulin)) +
+  geom_point(aes(y=resid), alpha=0.9) +
+  labs(x="insulin", y="Residuals") + 
+ 
+  theme_minimal()
+
+
+df1 %>%
+  add_residuals(fit1, "resid") %>%
+  ggplot(aes(x=mass)) +
+  geom_point(aes(y=resid), alpha=0.9) +
+  labs(x="mass", y="Residuals") +  
+
+  theme_minimal()
+
+
+df1 %>%
+  add_residuals(fit1, "resid") %>%
+  ggplot(aes(x=pedigree)) +
+  geom_point(aes(y=resid), alpha=0.9) +
+  labs(x="pedigree", y="Residuals") + 
+ 
+  theme_minimal()
+
+
+
+
+df1 %>%
+  add_residuals(fit1, "resid") %>%
+  ggplot(aes(x=age)) +
+  geom_point(aes(y=resid), alpha=0.9) + 
+ 
+  labs(x="age", y="Residuals") +
+  theme_minimal()
+```
+
+
+
+
+
+```{r}
+set.seed(2021)
+N <- 392
+s <- sample_n(df1, N)
+mean(df1$pressure)
+sd(df1$pressure)
+
+se <- sd(df1$pressure) / sqrt(N)
+se
+```
+```{r}
+set.seed(2021)
+nsamples <- 392
+h0mean <- 50
+h0 <- rnorm(nsamples, mean=h0mean, sd=se)
+h0 <- tibble(sample=seq_len(nsamples), mean=h0)
+
+ggplot(h0, aes(x=mean)) + 
+  geom_histogram(binwidth=2) +
+  geom_vline(xintercept=h0mean,
+             color="blue") +
+  geom_vline(xintercept=mean(df1$pressure),
+             linetype="dotdash",
+             color="red") +
+  theme_minimal()
+
+summarize(h0, PValue=mean(mean > mean(df1$pressure)))
+```
+
+
+#q4
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+
+ggplot(df1, aes(x= pregnant, y=pressure)) +
+geom_point(alpha=0.9) +
+geom_smooth() +
+geom_smooth(method="lm", color="red") +
+labs(x="pregnant", y="pressure") +
+theme_minimal()
+
+
+
+ggplot(df1, aes(x=glucose , y=pressure)) +
+geom_point(alpha=0.9) +
+geom_smooth() +
+geom_smooth(method="lm", color="red") +
+labs(x="glucose", y="pressure") +
+theme_minimal()
+
+ggplot(df1, aes(x=insulin , y=pressure)) +
+geom_point(alpha=0.9) +
+geom_smooth() +
+geom_smooth(method="lm", color="red") +
+labs(x="insulin", y="pressure") +
+theme_minimal()
+
+
+ggplot(df1, aes(x=triceps, , y=pressure)) +
+geom_point(alpha=0.9) +
+geom_smooth() +
+geom_smooth(method="lm", color="red") +
+labs(x="triceps,", y="pressure") +
+theme_minimal()
+
+ggplot(df1, aes(x=mass , y=pressure)) +
+geom_point(alpha=0.9) +
+geom_smooth() +
+geom_smooth(method="lm", color="red") +
+labs(x="mass", y="pressure") +
+theme_minimal()
+
+
+ggplot(df1, aes(x=age , y=pressure)) +
+geom_point(alpha=0.9) +
+geom_smooth() +
+geom_smooth(method="lm", color="red") +
+labs(x="age", y="pressure") +
+theme_minimal()
+```
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+fit1 <- lm((pressure) ~ diabetes, data=df1)
+
+AIC(fit1)
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+fit2 <- lm((pressure) ~ diabetes + mass , data=df1)
+
+AIC(fit2)
+
+
+
+fit3 <- lm((pressure) ~ diabetes + age , data=df1)
+AIC(fit3)
+
+
+
+fit4 <- lm((pressure) ~ diabetes + glucose, data=df1)
+
+AIC(fit4)
+
+
+
+fit5 <- lm((pressure) ~ diabetes + insulin, data=df1)
+
+AIC(fit5)
+
+
+fit6 <- lm((pressure) ~ diabetes + triceps, data=df1)
+
+AIC(fit6)
+```
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+fit7 <- lm((pressure) ~ diabetes + mass + age , data=df1)
+
+AIC(fit7)
+
+fit8 <- lm((pressure) ~ diabetes + mass + insulin , data=df1)
+
+AIC(fit8)
+
+fit8 <- lm((pressure) ~ diabetes + mass + triceps, data=df1)
+
+AIC(fit8)
+
+fit8 <- lm((pressure) ~ diabetes + mass + glucose , data=df1)
+
+AIC(fit8)
+```
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+fit9 <- lm((pressure) ~ diabetes + mass + age +insulin, data=df1)
+
+AIC(fit9)
+
+fit10 <- lm((pressure) ~ diabetes + mass + age +triceps, data=df1)
+
+AIC(fit10)
+
+fit11 <- lm((pressure) ~ diabetes + mass + age +glucose , data=df1)
+
+AIC(fit11)
+
+```
+
+
+#q5 
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+fit7 <- lm((pressure) ~ diabetes + mass + age , data=df1)
+summary(fit7)
+```

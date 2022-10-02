@@ -1,0 +1,71 @@
+---
+title: "Miniposter"
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+#Importing required libraries
+library(nycflights13)
+library(dplyr)
+library(fivethirtyeight)
+library(ggplot2)
+library(readxl)
+
+
+
+```
+
+install.packages("readxl") 
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+ggplot(heart_PROBLEM, aes(x=age)) +
+  geom_histogram() +
+  labs(title="Distribution of age of patients (bins = 30)",
+       x="Age (years)") +
+  theme_minimal()
+```
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+ggplot(data=heart_PROBLEM)  +
+geom_bar(mapping=aes(x=factor(output),fill=factor(sex))) +
+facet_wrap(~sex)+
+
+  labs(title=" Health condition of population divided by Gender",
+       x="Disease status",
+       y="Number of People")+
+   labs(fill="Gender")
+  
+           
+  theme_minimal()
+
+```
+
+
+
+
+
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+  ggplot(data=heart_PROBLEM) +
+  geom_point(mapping=aes(x=age,y=thalachh,shape=factor(output)))+
+  geom_smooth(mapping=aes(x=age,y=thalachh,color=as.factor(output)))+
+  facet_wrap(~output)+
+  labs(title="Age vs Thalachh distributed for Disease and Non-Disease Population",
+       x="Age") +
+   labs(shape="Population",col="Health condition")+
+  theme_minimal()
+
+```
+
+
+

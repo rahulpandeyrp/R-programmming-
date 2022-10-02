@@ -1,0 +1,181 @@
+---
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+  
+---
+ASSIGNMENT -1
+
+
+Rahul Pandey
+
+```{r echo=TRUE, message=FALSE, warning=FALSE}
+#Importing required libraries
+library(nycflights13)
+library(dplyr)
+library(fivethirtyeight)
+library(ggplot2)
+
+
+
+```
+
+Part A
+#q1
+
+```{r}
+testdf <- data.frame(
+  row.names=c("Jack", "Rosa", "Dawn", "Vicki", "Blake", "Guillermo"),
+  age=c(24, 23, NA, 25, 32, 19),
+  city=c("Harlem", NA, "Queens", "Brooklyn", "Brooklyn", NA),
+  gpa=c(3.5, 3.6, 4.0, NA, 3.8, NA))
+
+
+count_na <- function (testdf,byrow=TRUE)
+{
+  if(byrow==FALSE)
+    colSums(is.na(testdf))
+  else
+    rowSums(is.na(testdf)) 
+}
+count_na(testdf,TRUE) #passing true to get rowwise na count
+```
+```{r}
+
+count_na(testdf,FALSE) #passing false to get column wise
+```
+
+
+
+
+
+#q2
+
+```{r}
+
+testdf <- data.frame(
+  row.names=c("Jack", "Rosa", "Dawn", "Vicki", "Blake", "Guillermo"),
+  age=c(24, 23, NA, 25, 32, 19),
+  city=c("Harlem", NA, "Queens", "Brooklyn", "Brooklyn", NA),
+  gpa=c(3.5, 3.6, 4.0, NA, 3.8, NA))
+
+my_mode <- function(x) {              # Create mode function 
+  x <- na.omit(x)
+  unique_x <- unique(x)
+  tabulate_x <- tabulate(match(x, unique_x))
+  unique_x[tabulate_x == max(tabulate_x)]
+  
+}
+
+
+
+imputedf <- function(testdf,usemean=FALSE)
+{
+  y <- colnames(select_if(testdf,is.numeric))  #assigning columns 
+  z <- colnames(select_if(testdf, is.factor))
+  z <- append(z, colnames(select_if(testdf, is.character)))
+  if(usemean==TRUE)
+  {
+    for(i in y)
+    {              #calculating mean
+      testdf[is.na(testdf[,i]), i] <- mean(testdf[,i], na.rm = TRUE)
+    }
+  }
+  
+  else
+  {
+    for(i in y) 
+      #calculating median 
+    {
+      testdf[is.na(testdf[,i]), i] <- median(testdf[,i], na.rm = TRUE)
+    }
+  }
+  for(i in z)
+  {              #calculating mode
+    testdf[is.na(testdf[,i]), i] <- my_mode(testdf[,c(z)])
+  }
+  
+  
+  return(testdf)
+}
+imputedf(testdf,TRUE) #true for mean
+```
+```{r}
+imputedf(testdf,FALSE) # false for median
+```
+
+
+
+Part B
+
+
+#q3
+
+```{r}
+ggplot(congress_age,aes(x=congress,y=age,group=congress)) + geom_boxplot()+facet_grid(~chamber)+
+labs(title=
+"Age distribution of Senate and House members from congress number 80 till 113" )
+
+```
+Insights
+
+1.) For both senate and house, median age was steady (around 55 for house and 58 for senate) till around 90th.From that point there is a dip in the median  roughly till 100th congress for both the graphs.Furthermore after 100th onwards the median age sharply increases with reaching peak at the end for both house and senate.
+
+2.)Senate's median age was always greater than house's median age.
+
+3.)From 95th congress the oldest senator's age  in each congress was always greater than the preceding ones till 108th congress.i.e every year senior most members age was increasing. 
+
+
+
+
+#q4
+```{r}
+
+police_killing_a <- na.omit(police_killings) #removing na
+police_killing_a$h_quintile <- ntile(police_killing_a$h_income,5)#calculating quintiles
+police_killing_a$h_quintile <- police_killing_a$h_quintile*20
+
+ggplot(police_killing_a,aes(x=raceethnicity,fill=raceethnicity))+ geom_bar() + facet_grid(~h_quintile) +
+theme_minimal() +
+theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust=1))+
+labs(title=
+"Police killing for Race/Ethnicity distributed over National Quintile of Household Income" )
+```
+Insights
+
+1.) In black population the police killing reduces as we increase the 
+household income with a slight increase from 60th percentile to 80th percentile where as in white population the relation is inverse,  which means, that the police killing increases as we increase the household income.
+ 
+ 2.)For  Hispanic the killings seems to be same across the home income
+ percentiles with a little dip as we go higher up in the household income.
+ 
+ 3.)Asian/pacific islander and Native  Americans have the least killings
+ according to the data with almost zero kills  for asians in 20-4oth percentile and same for Native Americans is true in 60-100th percentile. 
+
+
+
+
+
+#q5
+```{r}
+bechdel$worldwidegross_2013 <-bechdel$intgross_2013+bechdel$domgross_2013
+ggplot(bechdel,aes(x=budget_2013,y=worldwidegross_2013,color=binary))+ geom_point()+geom_smooth()+
+  labs(title=
+"Bechdel test result spread over World wide revenue and Budget of a Movie" )
+
+```
+
+
+Insights
+
+1.)The movie's budget and movie gross earning seems to have a positive linear relationships 
+with some outlier present.So higher budget movie will generate more money on the box office.
+
+2.)It is clear from the visualization that movie, right from the lower budget ones to higher ones , for both test results(pass and fail), have almost the same trend. 
+
+3.)There is a significant overlap of trendlines for both the test results.
+
+
+ 
+
